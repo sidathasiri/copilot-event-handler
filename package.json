@@ -1,0 +1,16 @@
+{
+  "name": "copilot-event-handler",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "package": "zip -r lambda_function_payload.zip src node_modules"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.632.0"
+  }
+}
