@@ -1,2 +1,7 @@
 node_modules
 lambda_function_payload.zip
+
+# Terraform
+.terraform/
+terraform.tfstate
+terraform.tfstate.backup
