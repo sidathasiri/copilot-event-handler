@@ -1,6 +1,6 @@
 const {
   DynamoDBClient,
-  PutItemCommand,
+  UpdateItemCommand,
   GetItemCommand,
 } = require("@aws-sdk/client-dynamodb");
 
@@ -16,13 +16,12 @@ exports.handler = async (event) => {
       const messageBody = JSON.parse(record.body);
       console.log("Processing message:", messageBody);
 
-      //   const machineId = messageBody.machineId;
       const machineId = messageBody.machineId;
       const eventName = messageBody.eventName;
       const datetime = messageBody.datetime;
 
       const getItemParams = {
-        TableName: "CopilotUsage", // Replace with your DynamoDB table name
+        TableName: "CopilotUsage",
         Key: {
           pk: { S: `user#${machineId}` },
           sk: { S: `user#${machineId}` },
@@ -40,19 +39,26 @@ exports.handler = async (event) => {
         return;
       }
 
-      const putItemParams = {
+      const dateObject = new Date(datetime);
+      // Extract only the date in YYYY-MM-DD format
+      const dateOnly = dateObject.toISOString().split("T")[0];
+
+      const updateItemParams = {
         TableName: "CopilotUsage",
-        Item: {
+        Key: {
           pk: { S: `user#${user.githubId.S}` },
-          sk: { S: `metric#${eventName}#date#${datetime}` },
-          githubId: { S: user.githubId.S },
-          type: { S: eventName },
-          value: { S: "1" },
-          date: { S: datetime },
+          sk: { S: `metric#${eventName}#date#${dateOnly}` },
+        },
+        UpdateExpression: "ADD #value :increment",
+        ExpressionAttributeNames: {
+          "#value": "value",
+        },
+        ExpressionAttributeValues: {
+          ":increment": { N: "1" },
         },
       };
 
-      await dynamoDbClient.send(new PutItemCommand(putItemParams));
+      await dynamoDbClient.send(new UpdateItemCommand(updateItemParams));
       console.log("Record persisted successfully");
     } catch (error) {
       console.error("Error processing message:", error);
