@@ -1,21 +1,22 @@
-# copilot-event-handler
+# Copilot Event Handler
 
-This components will process the events emitted from the GitHub Copilot Proxy via the AWS SQS and persists on the DynamoDB table.
+This component processes events emitted from the GitHub Copilot Proxy via AWS SQS and stores them in a DynamoDB table.
 
 ## Solution Overview
 
-A Lambda function will be invoked when events are added to the queue for processing. The event received from the queue will include the machine ID of the user and the Copilot event. 
+A Lambda function is triggered when events are added to the SQS queue. Each event includes the machine ID of the user and the Copilot event.
 
 ![Proxy Solution Image](solution.png)
 
-First, the Lambda function will query the DynamoDB table to find the GitHub ID by the machine ID. This mapping is added to the DynamoDB table via the [Registration API](https://github.com/sidathasiri/copilot-registration-api) through the [Copilot Usage Analyzer tool](https://github.com/sidathasiri/copilot-usage-analyzer). Once the GitHub ID is found, it will increase the counter value of the received Copilot event to reflect the usage of Copilot.
+The Lambda function first queries the DynamoDB table to find the corresponding GitHub ID using the machine ID. This mapping is established via the [Registration API](https://github.com/sidathasiri/copilot-registration-api) and the [Copilot Usage Analyzer tool](https://github.com/sidathasiri/copilot-usage-analyzer). Once the GitHub ID is identified, the function increments the counter for the specific Copilot event, reflecting the user's Copilot usage.
 
-The entire infrastructure can be provisioned by the provided Terraform implementation. 
+The entire infrastructure can be provisioned using the provided Terraform implementation.
 
-**Note: Ensure to deploy the [Registration API](https://github.com/sidathasiri/copilot-registration-api) first, to create the required DynamoDB table and the [Copilot Proxy Server](https://github.com/sidathasiri/copilot-proxy-server) to create the SQS queue and emit events**
+**Note:** Ensure that you deploy the [Registration API](https://github.com/sidathasiri/copilot-registration-api) first to create the necessary DynamoDB table. Additionally, deploy the [Copilot Proxy Server](https://github.com/sidathasiri/copilot-proxy-server) to create the SQS queue and emit events.
 
-## How to setup?
-- Run `npm install` to install dependencies
-- Run `npm run package` to zip and prepare the lambda function source code
-- Run `terraform init` to initialize the Terraform project
-- Run `terraform apply` to deploy infrastructure
+## Setup Instructions
+
+1. Run `npm install` to install the required dependencies.
+2. Run `npm run package` to zip and prepare the Lambda function's source code.
+3. Run `terraform init` to initialize the Terraform project.
+4. Run `terraform apply` to deploy the infrastructure.
